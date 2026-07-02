@@ -1,0 +1,64 @@
+{
+  "id": "dependency-downstream",
+  "title": "Orders timing out on payments dependency",
+  "severity": "sev1",
+  "incident": {
+    "id": "dependency-downstream",
+    "title": "Orders timing out on payments dependency",
+    "severity": "sev1",
+    "started_at": "2026-07-02T21:05:00Z",
+    "alert": {
+      "id": "sig-alert-01",
+      "kind": "alert",
+      "source": "prometheus",
+      "ts": "2026-07-02T21:05:15Z",
+      "title": "OrderLatency p99 > 5s",
+      "body": "orders-svc p99 latency exploded; requests hanging then failing with timeout",
+      "meta": {"service": "orders-svc"}
+    },
+    "signals": [
+      {
+        "id": "sig-log-01",
+        "kind": "log",
+        "source": "loki",
+        "ts": "2026-07-02T21:05:05Z",
+        "title": "orders-svc error",
+        "body": "context deadline exceeded calling payments-gateway; connection timed out after 5000ms",
+        "meta": {"service": "orders-svc"}
+      },
+      {
+        "id": "sig-trace-01",
+        "kind": "trace",
+        "source": "tempo",
+        "ts": "2026-07-02T21:05:08Z",
+        "title": "trace orders->payments",
+        "body": "span payments-gateway 4998ms then timed out; downstream not responding",
+        "meta": {"service": "payments-gateway"}
+      },
+      {
+        "id": "sig-metric-01",
+        "kind": "metric",
+        "source": "prometheus",
+        "ts": "2026-07-02T21:04:00Z",
+        "title": "payments-gateway availability",
+        "body": "payments-gateway health checks failing; provider status page reports incident",
+        "meta": {"service": "payments-gateway"}
+      },
+      {
+        "id": "sig-metric-02",
+        "kind": "metric",
+        "source": "prometheus",
+        "ts": "2026-07-02T21:00:00Z",
+        "title": "orders-svc cpu",
+        "body": "orders-svc cpu and memory nominal; not resource-bound",
+        "meta": {"service": "orders-svc"}
+      }
+    ]
+  },
+  "ground_truth": {
+    "root_cause": "Downstream payments-gateway dependency became unresponsive, causing orders-svc timeouts",
+    "category": "dependency",
+    "key_evidence": ["sig-log-01", "sig-trace-01", "sig-metric-01"],
+    "acceptable_next_steps": ["Add a circuit breaker / fail fast on payments-gateway", "Escalate to the payments provider and verify timeouts"]
+  }
+}

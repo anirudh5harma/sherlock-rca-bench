@@ -1,0 +1,64 @@
+{
+  "id": "resource-oom",
+  "title": "Recommender pods crash-looping (OOM)",
+  "severity": "sev2",
+  "incident": {
+    "id": "resource-oom",
+    "title": "Recommender pods crash-looping (OOM)",
+    "severity": "sev2",
+    "started_at": "2026-07-02T18:40:00Z",
+    "alert": {
+      "id": "sig-alert-01",
+      "kind": "alert",
+      "source": "prometheus",
+      "ts": "2026-07-02T18:40:30Z",
+      "title": "PodCrashLooping: recommender-svc",
+      "body": "recommender-svc pods restarting repeatedly; memory usage at 100% of limit before restart",
+      "meta": {"service": "recommender-svc"}
+    },
+    "signals": [
+      {
+        "id": "sig-metric-01",
+        "kind": "metric",
+        "source": "prometheus",
+        "ts": "2026-07-02T18:39:00Z",
+        "title": "recommender-svc memory",
+        "body": "heap climbed steadily to memory limit; out of memory before each restart",
+        "meta": {"service": "recommender-svc"}
+      },
+      {
+        "id": "sig-log-01",
+        "kind": "log",
+        "source": "loki",
+        "ts": "2026-07-02T18:40:10Z",
+        "title": "recommender-svc kill",
+        "body": "OOMKilled: java heap space exceeded; killed process 1",
+        "meta": {"service": "recommender-svc"}
+      },
+      {
+        "id": "sig-metric-02",
+        "kind": "metric",
+        "source": "prometheus",
+        "ts": "2026-07-02T18:35:00Z",
+        "title": "traffic",
+        "body": "request volume up 3x due to flash sale, driving larger in-memory candidate sets",
+        "meta": {"service": "recommender-svc"}
+      },
+      {
+        "id": "sig-deploy-01",
+        "kind": "deploy",
+        "source": "github-actions",
+        "ts": "2026-07-02T11:00:00Z",
+        "title": "Deploy recommender-svc v1.9",
+        "body": "deploy earlier in the day, stable for 7 hours (unrelated red herring)",
+        "meta": {"service": "recommender-svc"}
+      }
+    ]
+  },
+  "ground_truth": {
+    "root_cause": "Recommender-svc ran out of memory (OOMKilled) under 3x flash-sale traffic; heap exceeded limit",
+    "category": "resource",
+    "key_evidence": ["sig-metric-01", "sig-log-01"],
+    "acceptable_next_steps": ["Raise memory limits / scale recommender-svc", "Add backpressure or cap candidate-set size"]
+  }
+}

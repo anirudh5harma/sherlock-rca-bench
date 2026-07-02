@@ -1,0 +1,64 @@
+{
+  "id": "data-schema-drift",
+  "title": "Analytics pipeline dropping events",
+  "severity": "sev2",
+  "incident": {
+    "id": "data-schema-drift",
+    "title": "Analytics pipeline dropping events",
+    "severity": "sev2",
+    "started_at": "2026-07-02T11:48:00Z",
+    "alert": {
+      "id": "sig-alert-01",
+      "kind": "alert",
+      "source": "prometheus",
+      "ts": "2026-07-02T11:48:25Z",
+      "title": "DeadLetterQueue growing: events-consumer",
+      "body": "events-consumer dead-letter queue growing fast; downstream analytics counts flat",
+      "meta": {"service": "events-consumer"}
+    },
+    "signals": [
+      {
+        "id": "sig-log-01",
+        "kind": "log",
+        "source": "loki",
+        "ts": "2026-07-02T11:48:15Z",
+        "title": "events-consumer error",
+        "body": "failed to deserialize message: unknown field 'user_tier', schema validation error, unmarshal failed",
+        "meta": {"service": "events-consumer"}
+      },
+      {
+        "id": "sig-deploy-01",
+        "kind": "deploy",
+        "source": "github-actions",
+        "ts": "2026-07-02T11:40:00Z",
+        "title": "Deploy checkout-producer v6.3",
+        "body": "producer began emitting new 'user_tier' field in event payload; consumer schema not updated",
+        "meta": {"service": "checkout-producer"}
+      },
+      {
+        "id": "sig-metric-01",
+        "kind": "metric",
+        "source": "prometheus",
+        "ts": "2026-07-02T11:49:00Z",
+        "title": "consumer throughput",
+        "body": "consumer throughput dropped to near zero as messages routed to DLQ",
+        "meta": {"service": "events-consumer"}
+      },
+      {
+        "id": "sig-metric-02",
+        "kind": "metric",
+        "source": "prometheus",
+        "ts": "2026-07-02T11:30:00Z",
+        "title": "broker health",
+        "body": "kafka broker healthy, partitions balanced (not a broker issue)",
+        "meta": {"service": "kafka"}
+      }
+    ]
+  },
+  "ground_truth": {
+    "root_cause": "Producer added a new 'user_tier' field; consumer schema drift caused deserialization failures and dropped events",
+    "category": "data",
+    "key_evidence": ["sig-log-01", "sig-deploy-01"],
+    "acceptable_next_steps": ["Update the consumer schema to accept 'user_tier'", "Add a producer/consumer contract test"]
+  }
+}

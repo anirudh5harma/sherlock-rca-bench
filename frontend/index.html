@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sherlock RCA-Bench — AI-SRE root cause, measured</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="glass">🔎</span>
+      <div>
+        <h1>Sherlock <span>RCA-Bench</span></h1>
+        <p class="tag">Multi-agent root-cause analysis — with a ruler.</p>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <span id="llm-badge" class="badge badge-muted">llm: …</span>
+      <button id="btn-bench" class="btn btn-ghost">Run benchmark ▸</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <!-- Scenario rail -->
+    <aside class="rail">
+      <div class="rail-head">
+        <h2>Incidents</h2>
+        <span class="hint">pick one to investigate</span>
+      </div>
+      <ul id="scenario-list" class="scenario-list">
+        <li class="skeleton">loading scenarios…</li>
+      </ul>
+    </aside>
+
+    <!-- Investigation stage -->
+    <section class="stage">
+      <div id="empty-state" class="empty">
+        <div class="empty-glass">🕵️</div>
+        <h3>Select an incident to begin</h3>
+        <p>Sherlock dispatches specialist agents, correlates signals, and returns a ranked RCA — then a judge grades it against ground truth.</p>
+      </div>
+
+      <div id="investigation" class="investigation hidden">
+        <div class="inc-header">
+          <div>
+            <span id="inc-sev" class="sev">SEV?</span>
+            <h2 id="inc-title">Incident</h2>
+          </div>
+          <button id="btn-investigate" class="btn btn-primary">⚡ Investigate</button>
+        </div>
+
+        <!-- Live agent timeline -->
+        <div class="panel">
+          <div class="panel-head"><h3>Agent activity</h3><span id="run-latency" class="mini"></span></div>
+          <div id="agents" class="agents"></div>
+          <div id="timeline" class="timeline"></div>
+        </div>
+
+        <!-- Slack-style RCA card -->
+        <div id="rca-card" class="rca-card hidden">
+          <div class="rca-top">
+            <span class="rca-bot">🔎 Sherlock</span>
+            <span class="rca-app">APP</span>
+            <span id="rca-time" class="rca-time"></span>
+          </div>
+          <div class="rca-body">
+            <p id="rca-summary" class="rca-summary"></p>
+            <div class="rca-block">
+              <div class="rca-label">Ranked root causes</div>
+              <div id="rca-hypotheses"></div>
+            </div>
+            <div class="rca-cols">
+              <div class="rca-block">
+                <div class="rca-label">Blast radius</div>
+                <p id="rca-blast" class="rca-text"></p>
+              </div>
+              <div class="rca-block">
+                <div class="rca-label">Next steps</div>
+                <ul id="rca-next" class="rca-next"></ul>
+              </div>
+            </div>
+            <div id="rca-grade" class="rca-grade hidden"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Benchmark drawer -->
+  <div id="bench-drawer" class="drawer hidden">
+    <div class="drawer-head">
+      <h2>Benchmark run</h2>
+      <button id="bench-close" class="btn btn-ghost">✕</button>
+    </div>
+    <div id="bench-summary" class="bench-summary"></div>
+    <div id="bench-table" class="bench-table"></div>
+  </div>
+  <div id="scrim" class="scrim hidden"></div>
+
+  <script src="/app.js"></script>
+</body>
+</html>

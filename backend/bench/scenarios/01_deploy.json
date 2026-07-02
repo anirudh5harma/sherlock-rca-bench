@@ -1,0 +1,73 @@
+{
+  "id": "deploy-bad-rollout",
+  "title": "Checkout 5xx spike after release",
+  "severity": "sev1",
+  "incident": {
+    "id": "deploy-bad-rollout",
+    "title": "Checkout 5xx spike after release",
+    "severity": "sev1",
+    "started_at": "2026-07-02T14:32:00Z",
+    "alert": {
+      "id": "sig-alert-01",
+      "kind": "alert",
+      "source": "prometheus",
+      "ts": "2026-07-02T14:32:10Z",
+      "title": "HighErrorRate: checkout-svc 5xx > 8%",
+      "body": "error rate on checkout-svc jumped from 0.2% to 11% over 2 minutes; 500 responses",
+      "meta": {"service": "checkout-svc"}
+    },
+    "signals": [
+      {
+        "id": "sig-deploy-01",
+        "kind": "deploy",
+        "source": "github-actions",
+        "ts": "2026-07-02T14:28:00Z",
+        "title": "Deploy checkout-svc v2.14.0",
+        "body": "release v2.14.0 rolled to prod: refactored payment client, bumped grpc lib",
+        "meta": {"service": "checkout-svc", "sha": "9f2a1c"}
+      },
+      {
+        "id": "sig-deploy-02",
+        "kind": "deploy",
+        "source": "github-actions",
+        "ts": "2026-07-02T13:50:00Z",
+        "title": "Deploy search-svc v5.1.2",
+        "body": "unrelated release to search-svc",
+        "meta": {"service": "search-svc"}
+      },
+      {
+        "id": "sig-log-01",
+        "kind": "log",
+        "source": "loki",
+        "ts": "2026-07-02T14:32:05Z",
+        "title": "checkout-svc error",
+        "body": "PaymentClient: unexpected response schema, missing field 'authCode' after v2.14.0 upgrade",
+        "meta": {"service": "checkout-svc"}
+      },
+      {
+        "id": "sig-metric-01",
+        "kind": "metric",
+        "source": "prometheus",
+        "ts": "2026-07-02T14:33:00Z",
+        "title": "checkout-svc p99 latency",
+        "body": "p99 latency also rose from 220ms to 900ms as retries piled up",
+        "meta": {"service": "checkout-svc"}
+      },
+      {
+        "id": "sig-metric-02",
+        "kind": "metric",
+        "source": "prometheus",
+        "ts": "2026-07-02T14:20:00Z",
+        "title": "node cpu",
+        "body": "cluster cpu steady at 45%, no saturation",
+        "meta": {"service": "cluster"}
+      }
+    ]
+  },
+  "ground_truth": {
+    "root_cause": "Bad deploy v2.14.0 of checkout-svc broke the payment client (response schema mismatch), causing 5xx",
+    "category": "deploy",
+    "key_evidence": ["sig-deploy-01", "sig-log-01", "sig-alert-01"],
+    "acceptable_next_steps": ["Roll back checkout-svc to the previous release", "Diff v2.14.0 payment client changes"]
+  }
+}

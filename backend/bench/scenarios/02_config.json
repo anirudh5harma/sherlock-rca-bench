@@ -1,0 +1,64 @@
+{
+  "id": "config-bad-env",
+  "title": "Auth failures after config push",
+  "severity": "sev1",
+  "incident": {
+    "id": "config-bad-env",
+    "title": "Auth failures after config push",
+    "severity": "sev1",
+    "started_at": "2026-07-02T09:15:00Z",
+    "alert": {
+      "id": "sig-alert-01",
+      "kind": "alert",
+      "source": "prometheus",
+      "ts": "2026-07-02T09:15:20Z",
+      "title": "AuthLoginFailureRate > 60%",
+      "body": "login success rate collapsed from 99% to 38%; users cannot sign in",
+      "meta": {"service": "auth-svc"}
+    },
+    "signals": [
+      {
+        "id": "sig-deploy-01",
+        "kind": "deploy",
+        "source": "config-service",
+        "ts": "2026-07-02T09:12:00Z",
+        "title": "Config change: auth-svc env vars",
+        "body": "updated env variable JWT_ISSUER and rotated OAUTH_CLIENT_ID via config flag push",
+        "meta": {"service": "auth-svc"}
+      },
+      {
+        "id": "sig-log-01",
+        "kind": "log",
+        "source": "loki",
+        "ts": "2026-07-02T09:15:10Z",
+        "title": "auth-svc error",
+        "body": "invalid credential: token issuer mismatch, unauthorized 403 from identity provider",
+        "meta": {"service": "auth-svc"}
+      },
+      {
+        "id": "sig-metric-01",
+        "kind": "metric",
+        "source": "prometheus",
+        "ts": "2026-07-02T09:16:00Z",
+        "title": "auth-svc request volume",
+        "body": "request volume normal; only failure rate elevated",
+        "meta": {"service": "auth-svc"}
+      },
+      {
+        "id": "sig-deploy-02",
+        "kind": "deploy",
+        "source": "github-actions",
+        "ts": "2026-07-02T07:00:00Z",
+        "title": "Deploy auth-svc v3.2.0",
+        "body": "morning code deploy, ran clean for 2 hours before incident (likely unrelated)",
+        "meta": {"service": "auth-svc"}
+      }
+    ]
+  },
+  "ground_truth": {
+    "root_cause": "Config push changed JWT_ISSUER/OAUTH_CLIENT_ID env vars, causing token issuer mismatch and auth failures",
+    "category": "config",
+    "key_evidence": ["sig-deploy-01", "sig-log-01"],
+    "acceptable_next_steps": ["Revert the auth-svc config/env change", "Add validation on JWT_ISSUER config key"]
+  }
+}

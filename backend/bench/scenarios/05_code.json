@@ -1,0 +1,64 @@
+{
+  "id": "code-null-deref",
+  "title": "Profile page 500s on null field",
+  "severity": "sev2",
+  "incident": {
+    "id": "code-null-deref",
+    "title": "Profile page 500s on null field",
+    "severity": "sev2",
+    "started_at": "2026-07-02T16:02:00Z",
+    "alert": {
+      "id": "sig-alert-01",
+      "kind": "alert",
+      "source": "sentry",
+      "ts": "2026-07-02T16:02:12Z",
+      "title": "ErrorSpike: profile-svc unhandled exception",
+      "body": "profile-svc 500 errors climbing on GET /profile; single endpoint affected",
+      "meta": {"service": "profile-svc"}
+    },
+    "signals": [
+      {
+        "id": "sig-log-01",
+        "kind": "log",
+        "source": "sentry",
+        "ts": "2026-07-02T16:02:08Z",
+        "title": "profile-svc stack trace",
+        "body": "NullPointerException: cannot read property 'displayName' of null at renderProfile() line 88",
+        "meta": {"service": "profile-svc"}
+      },
+      {
+        "id": "sig-log-02",
+        "kind": "log",
+        "source": "sentry",
+        "ts": "2026-07-02T16:02:20Z",
+        "title": "profile-svc stack trace",
+        "body": "same NPE at renderProfile(); only triggered for users with no avatar set",
+        "meta": {"service": "profile-svc"}
+      },
+      {
+        "id": "sig-metric-01",
+        "kind": "metric",
+        "source": "prometheus",
+        "ts": "2026-07-02T16:01:00Z",
+        "title": "profile-svc error rate",
+        "body": "error rate on /profile only; other endpoints healthy",
+        "meta": {"service": "profile-svc"}
+      },
+      {
+        "id": "sig-deploy-01",
+        "kind": "deploy",
+        "source": "github-actions",
+        "ts": "2026-07-02T02:00:00Z",
+        "title": "Deploy profile-svc v4.0",
+        "body": "overnight deploy, but errors only started 14h later when a null-avatar user hit the page",
+        "meta": {"service": "profile-svc"}
+      }
+    ]
+  },
+  "ground_truth": {
+    "root_cause": "Unhandled null dereference in renderProfile() when a user has no avatar/displayName",
+    "category": "code",
+    "key_evidence": ["sig-log-01", "sig-log-02"],
+    "acceptable_next_steps": ["Ship a hotfix adding a null guard in renderProfile()", "Add a regression test for null-avatar users"]
+  }
+}
