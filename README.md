@@ -6,8 +6,6 @@ The hard part of an AI SRE isn't calling an LLM on logs. It's *trust*: proving t
 analysis is right before an enterprise lets it touch production. Most demos ship the agent.
 This ships the **agent + the benchmark that grades it**.
 
-Built as a conversation-starter for the [Sherlocks.ai](https://www.sherlocks.ai/) team.
-
 ## What's inside
 
 1. **Multi-agent RCA engine** — an alert fires; specialist agents fan out
