@@ -173,6 +173,7 @@ body {
 .drawer { position: fixed; top: 0; right: 0; width: min(700px, 94vw); height: 100%; background: var(--bg); border-left: 1px solid var(--border); z-index: 50; box-shadow: -12px 0 40px rgba(18,18,18,.08); overflow-y: auto; padding: 24px; }
 .drawer-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
 .drawer-head h2 { font-family: var(--font-head); margin: 0; font-weight: 600; font-size: 20px; }
+.drawer-desc { margin: -6px 0 18px; color: var(--text-2); font-size: 12.5px; line-height: 1.5; max-width: 560px; }
 .bench-summary { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
 .bench-table { display: flex; flex-direction: column; gap: 8px; }
 .bt-row { display: grid; grid-template-columns: 1fr 66px 66px 66px 62px; gap: 8px; align-items: center; padding: 11px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 12.5px; }

@@ -154,7 +154,7 @@ function renderReport(r) {
 async function runBench() {
   openBench();
   const summary = $("#bench-summary"); const table = $("#bench-table");
-  summary.innerHTML = '<span class="skeleton">running agent + judge over all scenarios…</span>';
+  summary.innerHTML = '<span class="skeleton">running agent + judge over all scenarios… (takes up to 15s)</span>';
   table.innerHTML = "";
   let res;
   try {
