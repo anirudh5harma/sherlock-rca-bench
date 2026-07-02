@@ -11,6 +11,6 @@ services:
       - key: RCA_AGENT_MODEL
         value: gpt-4o-mini
       - key: RCA_JUDGE_MODEL
-        value: gpt-4o
+        value: gpt-4o-mini
       - key: PYTHON_VERSION
         value: "3.12.6"
